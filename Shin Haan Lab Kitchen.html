@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shin Haan Lab Kitchen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Caveat:wght@500;700&family=Figtree:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Plan: a colored-pencil cookbook. Hero scene (pan + pot + board), then recipe-card sections.
+   One loud thing: the hand-drawn kitchen scene. Everything else stays quiet on white paper. */
+:root {
+  --paper: #fbfbf6;
+  --ink: #2b3544;
+  --tomato: #ee5a45;
+  --lemon: #ffc93c;
+  --leaf: #62b96b;
+  --sky: #4aa8e8;
+  --grape: #9b7ad8;
+  --muted: color-mix(in srgb, var(--ink) 72%, white);
+  --line: color-mix(in srgb, var(--ink) 85%, white);
+  --font-display: "Caprasimo", "Georgia", serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-hand: "Caveat", "Comic Sans MS", cursive;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background-color: var(--paper);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .38 0 0 0 0 .42 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+a { color: inherit; }
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 3px solid var(--sky);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+.wrap { width: min(1080px, 100% - 32px); margin-inline: auto; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 400; line-height: 1.1; margin: 0; text-wrap: balance; }
+p { margin: 0; max-width: 65ch; }
+.hand { font-family: var(--font-hand); font-weight: 700; }
+sub { font-size: .72em; line-height: 0; }
+sup { font-size: .72em; line-height: 0; }
+
+/* top bar */
+.bar { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; align-items: center; padding: 18px 0 6px; }
+.bar b { font-family: var(--font-hand); font-size: 1.6rem; font-weight: 700; }
+.bar nav { display: flex; flex-wrap: wrap; gap: 4px 20px; }
+.bar nav a { text-decoration: none; font-weight: 500; padding: 4px 0; border-bottom: 3px solid transparent; }
+.bar nav a:hover { border-bottom-color: var(--lemon); }
+
+/* hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 16px 40px; align-items: center; padding: 20px 0 48px; }
+.eyebrow { font-family: var(--font-hand); font-size: 1.55rem; color: var(--tomato); font-weight: 700; }
+.hero h1 { font-size: clamp(3rem, 8vw, 5.4rem); margin: 4px 0 18px; }
+.hero h1 span { display: block; font-size: .42em; color: var(--muted); margin-top: 8px; }
+.lede { font-size: 1.2rem; }
+.meta { margin-top: 16px; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 26px; padding: 0; list-style: none; }
+.chips li { padding: 5px 14px; border: 2px solid var(--ink); border-radius: 999px 40px 999px 40px / 40px 999px 40px 999px; font-weight: 500; background: color-mix(in srgb, var(--c, var(--lemon)) 38%, white); }
+.btn { display: inline-block; padding: 11px 22px; background: var(--tomato); color: #fff; font-weight: 700; text-decoration: none; border: 2px solid var(--ink); border-radius: 14px 22px 14px 22px / 22px 14px 22px 14px; box-shadow: 4px 4px 0 var(--ink); transition: transform .15s, box-shadow .15s; }
+.btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
+.scene { width: 100%; height: auto; display: block; overflow: visible; }
+.scene text { font-family: var(--font-hand); font-weight: 700; fill: var(--ink); }
+
+/* sections */
+section { padding: 44px 0; }
+.sec-head { margin-bottom: 28px; }
+.sec-head .hand { color: var(--tomato); font-size: 1.5rem; }
+.sec-head h2 { font-size: clamp(1.9rem, 4.4vw, 2.8rem); }
+.uline { display: block; width: 190px; height: 14px; margin-top: 6px; overflow: visible; }
+
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.card { position: relative; padding: 22px 22px 24px; background: #fff; border: 2px solid var(--ink); border-radius: 16px 22px 18px 24px / 22px 16px 24px 18px; box-shadow: 6px 6px 0 color-mix(in srgb, var(--c, var(--lemon)) 70%, white); display: flex; flex-direction: column; gap: 10px; }
+.card .course { font-family: var(--font-hand); font-size: 1.45rem; color: var(--muted); line-height: 1; }
+.card h3 { font-size: 1.55rem; }
+.card svg.icon { width: 84px; height: 84px; margin-bottom: 2px; }
+.card .tags { margin: 6px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+.card .tags li { font-size: .88rem; padding: 2px 10px; border-radius: 999px; background: color-mix(in srgb, var(--c, var(--lemon)) 32%, white); }
+
+/* pantry */
+.pantry { margin-top: 34px; border: 2px dashed var(--line); border-radius: 18px; padding: 8px 18px 14px; background: color-mix(in srgb, var(--lemon) 10%, white); }
+.pantry h3 { font-size: 1.3rem; padding: 12px 0 4px; }
+.scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 560px; }
+th, td { text-align: left; padding: 9px 14px 9px 0; vertical-align: top; border-bottom: 1.5px solid color-mix(in srgb, var(--ink) 18%, white); }
+th { font-family: var(--font-hand); font-size: 1.25rem; color: var(--muted); font-weight: 700; }
+tbody th { font-family: var(--font-body); font-size: 1rem; color: var(--ink); }
+tr:last-child td, tr:last-child th { border-bottom: 0; }
+
+/* recipe */
+.equation { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr; gap: 12px; align-items: stretch; }
+.op { align-self: center; font-family: var(--font-display); font-size: 2.2rem; color: var(--tomato); }
+.part { padding: 18px; background: #fff; border: 2px solid var(--ink); border-radius: 20px 14px 22px 16px / 16px 22px 14px 20px; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.part svg { width: 72px; height: 72px; }
+.part .hand { font-size: 1.3rem; color: var(--muted); line-height: 1; }
+.part h3 { font-size: 1.25rem; }
+.part p { font-size: .98rem; }
+.part.result { background: color-mix(in srgb, var(--leaf) 22%, white); justify-content: center; }
+.note { margin-top: 22px; }
+
+/* experiment */
+.lab { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+.panel { background: #fff; border: 2px solid var(--ink); border-radius: 18px 24px 18px 24px / 24px 18px 24px 18px; padding: 16px; box-shadow: 6px 6px 0 color-mix(in srgb, var(--sky) 55%, white); }
+.panel svg { width: 100%; height: auto; display: block; overflow: visible; }
+.panel svg text { font-family: var(--font-hand); font-weight: 700; fill: var(--ink); }
+.controls { display: flex; flex-direction: column; gap: 14px; }
+.controls label { font-weight: 700; display: block; margin-bottom: 4px; }
+input[type="range"] { width: 100%; accent-color: var(--tomato); }
+button.drop { align-self: flex-start; padding: 10px 20px; font: inherit; font-weight: 700; background: var(--lemon); border: 2px solid var(--ink); border-radius: 14px 20px 14px 20px / 20px 14px 20px 14px; box-shadow: 3px 3px 0 var(--ink); cursor: pointer; }
+button.drop:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+.readout { min-height: 3.4em; font-size: 1rem; }
+.readout strong { display: block; }
+.small { font-size: .92rem; color: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .92rem; }
+.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--ink); margin-right: 6px; vertical-align: -1px; }
+
+/* log */
+.log { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.entry { padding: 22px; background: #fff; border: 2px solid var(--ink); border-radius: 16px 22px 18px 24px / 22px 16px 24px 18px; box-shadow: 6px 6px 0 color-mix(in srgb, var(--c) 65%, white); display: flex; flex-direction: column; gap: 8px; }
+.entry .hand { font-size: 1.35rem; color: var(--muted); line-height: 1; }
+.entry h3 { font-size: 1.45rem; }
+
+/* contact */
+.order { text-align: left; padding: 30px; border: 2px solid var(--ink); border-radius: 22px 16px 24px 18px / 16px 24px 18px 22px; background: color-mix(in srgb, var(--sky) 16%, white); display: flex; flex-wrap: wrap; gap: 18px 36px; align-items: center; justify-content: space-between; }
+.order h2 { font-size: clamp(1.7rem, 4vw, 2.4rem); }
+.order .addr { font-family: var(--font-hand); font-size: 1.7rem; font-weight: 700; word-break: break-all; }
+footer { padding: 30px 0 48px; color: var(--muted); font-size: .95rem; }
+
+@media (max-width: 880px) {
+  .hero { grid-template-columns: 1fr; }
+  .cards, .log, .lab { grid-template-columns: 1fr; }
+  .equation { grid-template-columns: 1fr; }
+  .op { justify-self: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .btn { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- shared drawing defs: pencil texture + shading hatch + reusable icons -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="pencil" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4" result="warp"/>
+      <feDisplacementMap in="SourceGraphic" in2="warp" scale="3.2" xChannelSelector="R" yChannelSelector="G" result="wob"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="11" result="grain"/>
+      <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.4 1.75" result="mask"/>
+      <feComposite in="wob" in2="mask" operator="in"/>
+    </filter>
+    <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(38)">
+      <line x1="0" y1="0" x2="0" y2="7" stroke="#2b3544" stroke-width="1.1" opacity=".3"/>
+    </pattern>
+
+    <symbol id="i-jelly" viewBox="0 0 100 100">
+      <g filter="url(#pencil)" stroke="#2b3544" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+        <ellipse cx="50" cy="82" rx="42" ry="9" fill="#4aa8e8"/>
+        <path d="M24 78 L31 42 Q50 28 69 42 L76 78 Q50 86 24 78 Z" fill="#ee5a45"/>
+        <path d="M24 78 L31 42 Q50 28 69 42 L76 78 Q50 86 24 78 Z" fill="url(#hatch)" stroke="none"/>
+        <path d="M38 48 Q36 62 40 72" fill="none" stroke="#fff" stroke-width="4"/>
+      </g>
+    </symbol>
+    <symbol id="i-lattice" viewBox="0 0 100 100">
+      <g filter="url(#pencil)" stroke="#2b3544" stroke-width="3" stroke-linejoin="round">
+        <rect x="16" y="20" width="68" height="62" rx="8" fill="#62b96b"/>
+        <rect x="16" y="20" width="68" height="62" rx="8" fill="url(#hatch)" stroke="none"/>
+        <g fill="#fbfbf6" stroke-width="2.2">
+          <circle cx="34" cy="38" r="7"/><circle cx="52" cy="36" r="6"/><circle cx="69" cy="39" r="7"/>
+          <circle cx="35" cy="56" r="6"/><circle cx="51" cy="54" r="7"/><circle cx="68" cy="57" r="6"/>
+          <circle cx="33" cy="72" r="5"/><circle cx="50" cy="71" r="5"/><circle cx="67" cy="72" r="5"/>
+        </g>
+      </g>
+    </symbol>
+    <symbol id="i-dome" viewBox="0 0 100 100">
+      <g filter="url(#pencil)" stroke="#2b3544" stroke-width="3" stroke-linejoin="round">
+        <ellipse cx="50" cy="80" rx="44" ry="8" fill="#ffc93c"/>
+        <path d="M14 78 A36 36 0 0 1 86 78 Q50 88 14 78 Z" fill="#9b7ad8"/>
+        <path d="M14 78 A36 36 0 0 1 86 78 Q50 88 14 78 Z" fill="url(#hatch)" stroke="none"/>
+        <g fill="#fbfbf6" stroke-width="2">
+          <circle cx="38" cy="62" r="7"/><circle cx="58" cy="58" r="8"/><circle cx="48" cy="44" r="6"/><circle cx="68" cy="70" r="5"/>
+        </g>
+        <g fill="#ee5a45" stroke="none"><circle cx="38" cy="62" r="2.5"/><circle cx="58" cy="58" r="3"/><circle cx="48" cy="44" r="2.2"/><circle cx="68" cy="70" r="2"/></g>
+      </g>
+    </symbol>
+    <symbol id="i-bowl" viewBox="0 0 100 100">
+      <g filter="url(#pencil)" stroke="#2b3544" stroke-width="3" stroke-linejoin="round">
+        <g fill="#fbfbf6" stroke-width="2.4">
+          <circle cx="34" cy="46" r="10"/><circle cx="56" cy="38" r="10"/><circle cx="72" cy="50" r="9"/><circle cx="48" cy="56" r="9"/>
+        </g>
+        <g fill="#ffc93c" stroke="none"><circle cx="34" cy="46" r="4"/><circle cx="56" cy="38" r="4"/><circle cx="72" cy="50" r="3.6"/><circle cx="48" cy="56" r="3.6"/></g>
+        <path d="M10 58 Q50 104 90 58 Z" fill="#4aa8e8"/>
+        <path d="M10 58 Q50 104 90 58 Z" fill="url(#hatch)" stroke="none"/>
+      </g>
+    </symbol>
+    <symbol id="i-shaker" viewBox="0 0 100 100">
+      <g filter="url(#pencil)" stroke="#2b3544" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M30 40 L28 82 Q28 88 34 88 L58 88 Q64 88 64 82 L62 40 Z" fill="#fbfbf6"/>
+        <path d="M30 40 L28 82 Q28 88 34 88 L58 88 Q64 88 64 82 L62 40 Z" fill="url(#hatch)" stroke="none"/>
+        <path d="M28 40 Q28 20 46 18 Q64 20 64 40 Z" fill="#ee5a45"/>
+        <g fill="#2b3544" stroke="none"><circle cx="40" cy="30" r="1.8"/><circle cx="48" cy="26" r="1.8"/><circle cx="55" cy="31" r="1.8"/></g>
+        <g fill="#ffc93c" stroke-width="2"><circle cx="76" cy="26" r="4"/><circle cx="86" cy="42" r="4"/><circle cx="78" cy="58" r="4"/></g>
+      </g>
+    </symbol>
+    <symbol id="i-tissue" viewBox="0 0 100 100">
+      <g filter="url(#pencil)" stroke="#2b3544" stroke-width="3" stroke-linejoin="round">
+        <path d="M14 70 L24 30 L82 24 L90 64 Z" fill="#ee5a45"/>
+        <path d="M14 70 L24 30 L82 24 L90 64 Z" fill="url(#hatch)" stroke="none"/>
+        <g stroke="#fbfbf6" stroke-width="3.5" stroke-linecap="round" fill="none"><path d="M26 42 L78 36"/><path d="M24 54 L80 48"/><path d="M20 64 L84 58"/></g>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <header class="bar">
+    <b>Shin Haan's Lab Kitchen</b>
+    <nav aria-label="Sections">
+      <a href="#menu">Menu</a>
+      <a href="#recipe">Recipe</a>
+      <a href="#experiment">Experiment</a>
+      <a href="#log">Lab log</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div>
+      <div class="eyebrow">Table for one researcher</div>
+      <h1>Shin Haan<span>신하안</span></h1>
+      <p class="lede">I want to grow tissue the way a good kitchen makes dinner: the right ingredients, the right mold, and patient heat.</p>
+      <p class="meta">Biomedical engineering · Gyeonggibuk Science High School</p>
+      <ul class="chips">
+        <li style="--c: var(--tomato)">Tissue engineering</li>
+        <li style="--c: var(--leaf)">Biomaterials</li>
+        <li style="--c: var(--grape)">Organoids</li>
+      </ul>
+      <a class="btn" href="#contact">Place an order (contact)</a>
+    </div>
+
+    <svg class="scene" viewBox="-30 0 690 440" role="img" aria-label="Colored-pencil kitchen: a fried egg that is also a cell, a pot releasing a DNA helix wearing a chef hat, and a glucose molecule being diced on a cutting board.">
+      <g filter="url(#pencil)" stroke="#2b3544" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <!-- counter -->
+        <path d="M-25 398 Q160 391 320 397 T650 394" fill="none" stroke-width="4"/>
+
+        <!-- steam -->
+        <path d="M262 232 Q238 200 262 170 Q282 144 262 112" fill="none" stroke="#4aa8e8" stroke-width="4" opacity=".7"/>
+        <path d="M462 232 Q486 200 462 170 Q442 144 462 112" fill="none" stroke="#4aa8e8" stroke-width="4" opacity=".7"/>
+
+        <!-- pot -->
+        <path d="M246 252 L246 374 Q246 396 268 396 L452 396 Q474 396 474 374 L474 252 Z" fill="#4aa8e8"/>
+        <path d="M246 252 L246 374 Q246 396 268 396 L452 396 Q474 396 474 374 L474 252 Z" fill="url(#hatch)" stroke="none"/>
+        <path d="M246 286 Q206 286 206 308 Q206 328 246 328" fill="none" stroke-width="6"/>
+        <path d="M474 286 Q514 286 514 308 Q514 328 474 328" fill="none" stroke-width="6"/>
+        <ellipse cx="360" cy="252" rx="114" ry="17" fill="#3a93d2"/>
+        <ellipse cx="360" cy="254" rx="100" ry="11" fill="#62b96b"/>
+        <path d="M290 330 Q360 346 430 330" fill="none" stroke="#fbfbf6" stroke-width="4" opacity=".8"/>
+
+        <!-- DNA helix -->
+        <g id="helix" fill="none"></g>
+
+        <!-- chef hat -->
+        <path d="M328 78 Q316 54 338 50 Q344 32 366 38 Q388 30 392 52 Q410 58 394 78 Z" fill="#fff"/>
+        <rect x="332" y="76" width="62" height="14" rx="3" fill="#fff"/>
+
+        <!-- floating water molecule -->
+        <line x1="452" y1="196" x2="430" y2="214"/><line x1="452" y1="196" x2="476" y2="214"/>
+        <circle cx="452" cy="196" r="11" fill="#ee5a45"/>
+        <circle cx="428" cy="216" r="7" fill="#fff"/><circle cx="478" cy="216" r="7" fill="#fff"/>
+        <!-- floating salt -->
+        <circle cx="268" cy="206" r="8" fill="#fbfbf6"/><circle cx="286" cy="206" r="10" fill="#62b96b"/>
+        <line x1="276" y1="206" x2="276" y2="206"/>
+
+        <!-- pan -->
+        <rect x="-26" y="372" width="64" height="11" rx="5" fill="#8a5a3b"/>
+        <ellipse cx="128" cy="380" rx="96" ry="19" fill="#4b5668"/>
+        <ellipse cx="128" cy="374" rx="88" ry="15" fill="#7b8799"/>
+        <ellipse cx="128" cy="374" rx="88" ry="15" fill="url(#hatch)" stroke="none"/>
+        <!-- egg / cell -->
+        <path d="M82 372 Q76 346 104 342 Q126 332 152 342 Q180 348 172 372 Q166 388 130 388 Q96 390 82 372 Z" fill="#fffdf5"/>
+        <circle cx="128" cy="365" r="19" fill="#ffc93c"/>
+        <circle cx="128" cy="365" r="19" fill="url(#hatch)" stroke="none"/>
+        <circle cx="134" cy="360" r="5.5" fill="#f08a1c" stroke-width="2"/>
+
+        <!-- board + glucose -->
+        <rect x="494" y="364" width="140" height="30" rx="7" fill="#d9a15b"/>
+        <rect x="494" y="364" width="140" height="30" rx="7" fill="url(#hatch)" stroke="none"/>
+        <g fill="none">
+          <polygon points="568,296 592,310 592,338 568,352 544,338 544,310" stroke-width="4"/>
+        </g>
+        <circle cx="568" cy="296" r="11" fill="#ee5a45"/>
+        <g fill="#596273">
+          <circle cx="592" cy="310" r="9"/><circle cx="592" cy="338" r="9"/><circle cx="568" cy="352" r="9"/><circle cx="544" cy="338" r="9"/><circle cx="544" cy="310" r="9"/>
+        </g>
+        <!-- knife -->
+        <path d="M604 276 L632 322 L616 330 L596 290 Z" fill="#d5dde8"/>
+        <line x1="604" y1="276" x2="598" y2="262" stroke-width="7"/>
+      </g>
+
+      <!-- labels, drawn without the grain so they stay readable -->
+      <text x="22" y="292" font-size="26">nucleus = yolk</text>
+      <path d="M70 302 Q92 330 118 352" fill="none" stroke="#2b3544" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M118 352 l-12 -4 m12 4 l-2 -13" fill="none" stroke="#2b3544" stroke-width="2.5" stroke-linecap="round"/>
+      <text x="498" y="258" font-size="26">C<tspan font-size="18" dy="5">6</tspan><tspan dy="-5">H</tspan><tspan font-size="18" dy="5">12</tspan><tspan dy="-5">O</tspan><tspan font-size="18" dy="5">6</tspan><tspan dy="-5">, diced</tspan></text>
+      <text x="468" y="170" font-size="24">H<tspan font-size="17" dy="5">2</tspan><tspan dy="-5">O</tspan></text>
+      <text x="200" y="196" font-size="24">NaCl</text>
+      <text x="410" y="38" font-size="24">chef DNA</text>
+    </svg>
+  </div>
+
+  <!-- MENU -->
+  <section id="menu" aria-labelledby="menu-h">
+    <div class="sec-head">
+      <div class="hand">Today's menu</div>
+      <h2 id="menu-h">Three courses, one question: how do cells build things?</h2>
+      <svg class="uline" viewBox="0 0 190 14" aria-hidden="true"><path d="M3 9 Q30 2 62 8 T126 7 T187 5" fill="none" stroke="#ee5a45" stroke-width="4" stroke-linecap="round" filter="url(#pencil)"/></svg>
+    </div>
+    <div class="cards">
+      <article class="card" style="--c: var(--tomato)">
+        <svg class="icon" viewBox="0 0 100 100" aria-hidden="true"><use href="#i-jelly"/></svg>
+        <div class="course">Starter</div>
+        <h3>Biomaterials</h3>
+        <p>Materials that cells can live in. Gelatin, agar and alginate sit in kitchens and labs alike, so I start by asking what each one gives a cell.</p>
+        <ul class="tags"><li>Hydrogels</li><li>Gelatin</li><li>Alginate</li></ul>
+      </article>
+      <article class="card" style="--c: var(--leaf)">
+        <svg class="icon" viewBox="0 0 100 100" aria-hidden="true"><use href="#i-lattice"/></svg>
+        <div class="course">Main course</div>
+        <h3>Tissue engineering</h3>
+        <p>Building working tissue from cells, a porous scaffold and the right signals. The scaffold decides where cells attach, how they line up and how far nutrients travel.</p>
+        <ul class="tags"><li>Scaffolds</li><li>Cell culture</li><li>Regeneration</li></ul>
+      </article>
+      <article class="card" style="--c: var(--grape)">
+        <svg class="icon" viewBox="0 0 100 100" aria-hidden="true"><use href="#i-dome"/></svg>
+        <div class="course">Dessert</div>
+        <h3>Organoids</h3>
+        <p>Stem cells that organize themselves into miniature organ-like structures, usually grown in a dome of hydrogel. A small model of a whole organ.</p>
+        <ul class="tags"><li>Stem cells</li><li>3D culture</li><li>Disease models</li></ul>
+      </article>
+    </div>
+
+    <div class="pantry">
+      <h3 class="hand" style="font-size:1.7rem">The pantry: one shelf, two uses</h3>
+      <div class="scroll">
+        <table>
+          <thead><tr><th scope="col">Ingredient</th><th scope="col">Where it comes from</th><th scope="col">In the kitchen</th><th scope="col">In the lab</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Gelatin</th><td>Denatured collagen from animal skin and bone</td><td>Jelly, gummies</td><td>Hydrogel for cell culture and bioprinting (e.g. GelMA)</td></tr>
+            <tr><th scope="row">Agar</th><td>Red algae</td><td>Set desserts</td><td>Solid medium in Petri dishes</td></tr>
+            <tr><th scope="row">Alginate</th><td>Brown seaweed</td><td>Spherification</td><td>Encapsulating cells; bioinks; gels with Ca<sup>2+</sup></td></tr>
+            <tr><th scope="row">Chitosan</th><td>Chitin in shrimp and crab shells</td><td>Mostly discarded</td><td>Wound dressings and scaffolds</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECIPE -->
+  <section id="recipe" aria-labelledby="recipe-h">
+    <div class="sec-head">
+      <div class="hand">The recipe</div>
+      <h2 id="recipe-h">Tissue = cells + scaffold + signals</h2>
+      <svg class="uline" viewBox="0 0 190 14" aria-hidden="true"><path d="M3 8 Q40 3 70 8 T130 6 T187 8" fill="none" stroke="#62b96b" stroke-width="4" stroke-linecap="round" filter="url(#pencil)"/></svg>
+    </div>
+    <div class="equation">
+      <div class="part">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#i-bowl"/></svg>
+        <span class="hand">the ingredients</span>
+        <h3>Cells</h3>
+        <p>The living material. Which cell type you start with sets what the tissue can become.</p>
+      </div>
+      <div class="op" aria-hidden="true">+</div>
+      <div class="part">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#i-lattice"/></svg>
+        <span class="hand">the baking mold</span>
+        <h3>Scaffold</h3>
+        <p>A porous structure that gives cells shape, a surface to grip and room to receive nutrients.</p>
+      </div>
+      <div class="op" aria-hidden="true">+</div>
+      <div class="part">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#i-shaker"/></svg>
+        <span class="hand">seasoning and heat</span>
+        <h3>Signals</h3>
+        <p>Growth factors and culture conditions, such as 37 °C and 5% CO<sub>2</sub>, that steer how cells behave.</p>
+      </div>
+      <div class="op" aria-hidden="true">=</div>
+      <div class="part result">
+        <svg viewBox="0 0 100 100" aria-hidden="true"><use href="#i-tissue"/></svg>
+        <span class="hand">dinner is served</span>
+        <h3>Tissue</h3>
+      </div>
+    </div>
+    <p class="note">Cultivated meat uses the same three parts. The product is muscle and fat tissue, so the scaffold has to work for cells that will end up on a plate.</p>
+  </section>
+
+  <!-- EXPERIMENT -->
+  <section id="experiment" aria-labelledby="exp-h">
+    <div class="sec-head">
+      <div class="hand">Kitchen experiment</div>
+      <h2 id="exp-h">Spherification: a hydrogel you can drop</h2>
+      <svg class="uline" viewBox="0 0 190 14" aria-hidden="true"><path d="M3 9 Q36 3 66 8 T128 7 T187 6" fill="none" stroke="#4aa8e8" stroke-width="4" stroke-linecap="round" filter="url(#pencil)"/></svg>
+    </div>
+    <p style="margin-bottom:24px">Drip sodium alginate into a calcium chloride bath. Ca<sup>2+</sup> ions link the alginate chains and a gel skin forms. Chefs use it for popping boba; tissue engineers use the same chemistry to wrap cells in gel beads. Set how long the bead stays in the bath, then drop one in.</p>
+
+    <div class="lab">
+      <div class="panel">
+        <svg viewBox="0 0 360 250" role="img" aria-label="A bowl of calcium chloride bath with gel beads resting at the bottom and a spoon above.">
+          <g filter="url(#pencil)" stroke="#2b3544" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M286 18 L206 58" fill="none" stroke-width="6"/>
+            <ellipse cx="190" cy="64" rx="24" ry="11" fill="#d5dde8"/>
+            <path d="M24 124 L336 124 Q336 232 180 238 Q24 232 24 124 Z" fill="#8ccaf2"/>
+            <path d="M24 124 L336 124 Q336 232 180 238 Q24 232 24 124 Z" fill="url(#hatch)" stroke="none"/>
+            <ellipse cx="180" cy="124" rx="156" ry="15" fill="#c5e5fa"/>
+          </g>
+          <g id="beads" filter="url(#pencil)"></g>
+          <text x="38" y="106" font-size="24">CaCl<tspan font-size="17" dy="5">2</tspan><tspan dy="-5"> bath</tspan></text>
+          <text x="30" y="52" font-size="22">Na-alginate drip</text>
+        </svg>
+      </div>
+
+      <div class="controls">
+        <div class="panel">
+          <svg viewBox="0 0 240 240" role="img" aria-label="Cross-section of one bead showing a gel shell around a liquid core." id="xsec"></svg>
+        </div>
+        <div>
+          <label for="secs">Time in bath: <span id="secs-out">30</span> s</label>
+          <input id="secs" type="range" min="0" max="120" step="1" value="30">
+        </div>
+        <button class="drop" id="drop" type="button">Drop a bead</button>
+        <div class="readout" id="readout" aria-live="polite"></div>
+        <div class="legend">
+          <span><i style="background:#f3b63f"></i>gel shell</span>
+          <span><i style="background:#cfe8fa"></i>liquid core</span>
+          <span><i style="background:#4aa8e8"></i>Ca<sup>2+</sup></span>
+        </div>
+        <p class="small">Schematic. Shell thickness is drawn to grow with the square root of time, the usual scaling for diffusion.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOG -->
+  <section id="log" aria-labelledby="log-h">
+    <div class="sec-head">
+      <div class="hand">Lab log</div>
+      <h2 id="log-h">What I have cooked, and what is on the stove</h2>
+      <svg class="uline" viewBox="0 0 190 14" aria-hidden="true"><path d="M3 8 Q34 4 64 8 T126 6 T187 8" fill="none" stroke="#ffc93c" stroke-width="5" stroke-linecap="round" filter="url(#pencil)"/></svg>
+    </div>
+    <div class="log">
+      <article class="entry" style="--c: var(--lemon)">
+        <div class="hand">Experience</div>
+        <h3>Youth Science Club (YSC)</h3>
+        <p>Research project work in the Youth Science Club.</p>
+      </article>
+      <article class="entry" style="--c: var(--tomato)">
+        <div class="hand">Next on the stove</div>
+        <h3>Scaffolds for cultivated meat</h3>
+        <p>I am planning a project on scaffolds for cultivated meat: what a scaffold must provide so muscle cells can attach, grow and form tissue. The hypotheses are still in development.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" aria-labelledby="contact-h">
+    <div class="order">
+      <div>
+        <h2 id="contact-h">Questions, ideas, a lab with a free bench?</h2>
+        <p style="margin-top:8px">I answer email in English.</p>
+      </div>
+      <div>
+        <div class="addr">haan2009.shin@gmail.com</div>
+        <a class="btn" style="margin-top:12px" href="mailto:haan2009.shin@gmail.com">Write to Shin Haan</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>Shin Haan · Gyeonggibuk Science High School · Drawn in colored pencil, tested on gelatin.</footer>
+</div>
+
+<script>
+(function () {
+  var NS = "http://www.w3.org/2000/svg";
+  function el(name, attrs, parent) {
+    var e = document.createElementNS(NS, name);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+
+  /* DNA helix rising out of the pot */
+  var helix = document.getElementById("helix");
+  if (helix) {
+    var N = 64, y0 = 92, y1 = 240, cx = 360, amp = 28, turns = 2.6;
+    var d1 = "", d2 = "";
+    for (var i = 0; i <= N; i++) {
+      var t = i / N, y = y0 + t * (y1 - y0);
+      var s = Math.sin(t * Math.PI * 2 * turns);
+      d1 += (i ? "L" : "M") + (cx + amp * s).toFixed(1) + " " + y.toFixed(1);
+      d2 += (i ? "L" : "M") + (cx - amp * s).toFixed(1) + " " + y.toFixed(1);
+      if (i % 4 === 2) {
+        el("line", { x1: cx + amp * s, y1: y, x2: cx - amp * s, y2: y, stroke: "#ffc93c", "stroke-width": 3 }, helix);
+      }
+    }
+    el("path", { d: d1, stroke: "#ee5a45", "stroke-width": 6 }, helix);
+    el("path", { d: d2, stroke: "#9b7ad8", "stroke-width": 6 }, helix);
+  }
+
+  /* Spherification model */
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var slider = document.getElementById("secs");
+  var out = document.getElementById("secs-out");
+  var xsec = document.getElementById("xsec");
+  var readout = document.getElementById("readout");
+  var beads = document.getElementById("beads");
+  var FULL = 90;
+
+  function fraction(s) { return Math.min(1, Math.sqrt(s / FULL)); }
+
+  function drawBead(parent, cx, cy, r, s) {
+    var f = fraction(s);
+    var g = el("g", {}, parent);
+    var shellW = Math.max(r * f, 1.6);
+    el("circle", { cx: cx, cy: cy, r: r, fill: "#f3b63f", stroke: "#2b3544", "stroke-width": 2.4 }, g);
+    var coreR = r - shellW;
+    if (coreR > 0.5) el("circle", { cx: cx, cy: cy, r: coreR, fill: "#cfe8fa", stroke: "#2b3544", "stroke-width": 1.6 }, g);
+    return g;
+  }
+
+  function renderXsec(s) {
+    var R = 92, c = 120, f = fraction(s);
+    xsec.textContent = "";
+    var scene = el("g", { filter: "url(#pencil)" }, xsec);
+    drawBead(scene, c, c, R, s);
+    var inner = R * (1 - f);
+    /* Ca2+ dots sit inside the shell, deterministic positions */
+    var count = 26;
+    for (var i = 0; i < count; i++) {
+      var ang = i * 2.399963;                       /* golden angle */
+      var u = (i + 0.5) / count;
+      var rr = inner + 4 + (R - inner - 8) * (0.15 + 0.8 * ((u * 7.3) % 1));
+      if (R - inner < 10) rr = R - 4;
+      el("circle", { cx: c + rr * Math.cos(ang), cy: c + rr * Math.sin(ang), r: 3.4, fill: "#4aa8e8", stroke: "#2b3544", "stroke-width": 1.2 }, scene);
+    }
+    var label = f >= 1 ? "solid gel" : "liquid core";
+    var t = el("text", { x: c, y: c + 5, "text-anchor": "middle", "font-size": 17 }, xsec);
+    t.textContent = f >= 1 ? "all gel" : (inner > 48 ? "liquid core" : "");
+  }
+
+  function message(s) {
+    var f = fraction(s), pct = Math.round(f * 100);
+    var head, body;
+    if (f >= 1) { head = "Fully gelled."; body = "Ca<sup>2+</sup> has reached the center, so the bead is a solid gel."; }
+    else if (s < 10) { head = "Thin skin, liquid center."; body = "The bead bursts like boba: little gel has formed yet."; }
+    else { head = "Shell still thickening."; body = "Ca<sup>2+</sup> keeps moving inward and the liquid core shrinks."; }
+    readout.innerHTML = "<strong>" + head + "</strong>" + body + " Shell: " + pct + "% of the radius.";
+  }
+
+  function update() {
+    var s = +slider.value;
+    out.textContent = s;
+    renderXsec(s);
+    message(s);
+  }
+
+  function addBead(s, animate) {
+    var r = 13, x = 82 + Math.random() * 196, y = 176 + Math.random() * 30;
+    /* keep inside the bowl curve */
+    var g = drawBead(beads, x, y, r, s);
+    if (animate && !reduce && g.animate) {
+      g.animate([{ transform: "translateY(-130px)", opacity: 0.2 }, { transform: "translateY(0)", opacity: 1 }], { duration: 850, easing: "cubic-bezier(.3,.1,.7,1)" });
+    }
+    while (beads.childNodes.length > 16) beads.removeChild(beads.firstChild);
+  }
+
+  slider.addEventListener("input", update);
+  document.getElementById("drop").addEventListener("click", function () { addBead(+slider.value, true); });
+
+  [8, 25, 45, 70, 100].forEach(function (s) { addBead(s, false); });
+  update();
+})();
+</script>
+</body>
+</html>
