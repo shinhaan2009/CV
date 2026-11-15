@@ -106,22 +106,6 @@ tr:last-child td, tr:last-child th { border-bottom: 0; }
 .part.result { background: color-mix(in srgb, var(--leaf) 22%, white); justify-content: center; }
 .note { margin-top: 22px; }
 
-/* experiment */
-.lab { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 24px; align-items: start; }
-.panel { background: #fff; border: 2px solid var(--ink); border-radius: 18px 24px 18px 24px / 24px 18px 24px 18px; padding: 16px; box-shadow: 6px 6px 0 color-mix(in srgb, var(--sky) 55%, white); }
-.panel svg { width: 100%; height: auto; display: block; overflow: visible; }
-.panel svg text { font-family: var(--font-hand); font-weight: 700; fill: var(--ink); }
-.controls { display: flex; flex-direction: column; gap: 14px; }
-.controls label { font-weight: 700; display: block; margin-bottom: 4px; }
-input[type="range"] { width: 100%; accent-color: var(--tomato); }
-button.drop { align-self: flex-start; padding: 10px 20px; font: inherit; font-weight: 700; background: var(--lemon); border: 2px solid var(--ink); border-radius: 14px 20px 14px 20px / 20px 14px 20px 14px; box-shadow: 3px 3px 0 var(--ink); cursor: pointer; }
-button.drop:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
-.readout { min-height: 3.4em; font-size: 1rem; }
-.readout strong { display: block; }
-.small { font-size: .92rem; color: var(--muted); }
-.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .92rem; }
-.legend i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--ink); margin-right: 6px; vertical-align: -1px; }
-
 /* log */
 .log { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
 .entry { padding: 22px; background: #fff; border: 2px solid var(--ink); border-radius: 16px 22px 18px 24px / 22px 16px 24px 18px; box-shadow: 6px 6px 0 color-mix(in srgb, var(--c) 65%, white); display: flex; flex-direction: column; gap: 8px; }
@@ -136,7 +120,7 @@ footer { padding: 30px 0 48px; color: var(--muted); font-size: .95rem; }
 
 @media (max-width: 880px) {
   .hero { grid-template-columns: 1fr; }
-  .cards, .log, .lab { grid-template-columns: 1fr; }
+  .cards, .log { grid-template-columns: 1fr; }
   .equation { grid-template-columns: 1fr; }
   .op { justify-self: center; }
 }
@@ -227,7 +211,6 @@ footer { padding: 30px 0 48px; color: var(--muted); font-size: .95rem; }
     <nav aria-label="Sections">
       <a href="#menu">Menu</a>
       <a href="#recipe">Recipe</a>
-      <a href="#experiment">Experiment</a>
       <a href="#log">Lab log</a>
       <a href="#contact">Contact</a>
     </nav>
@@ -403,51 +386,6 @@ footer { padding: 30px 0 48px; color: var(--muted); font-size: .95rem; }
     <p class="note">Cultivated meat uses the same three parts. The product is muscle and fat tissue, so the scaffold has to work for cells that will end up on a plate.</p>
   </section>
 
-  <!-- EXPERIMENT -->
-  <section id="experiment" aria-labelledby="exp-h">
-    <div class="sec-head">
-      <div class="hand">Kitchen experiment</div>
-      <h2 id="exp-h">Spherification: a hydrogel you can drop</h2>
-      <svg class="uline" viewBox="0 0 190 14" aria-hidden="true"><path d="M3 9 Q36 3 66 8 T128 7 T187 6" fill="none" stroke="#4aa8e8" stroke-width="4" stroke-linecap="round" filter="url(#pencil)"/></svg>
-    </div>
-    <p style="margin-bottom:24px">Drip sodium alginate into a calcium chloride bath. Ca<sup>2+</sup> ions link the alginate chains and a gel skin forms. Chefs use it for popping boba; tissue engineers use the same chemistry to wrap cells in gel beads. Set how long the bead stays in the bath, then drop one in.</p>
-
-    <div class="lab">
-      <div class="panel">
-        <svg viewBox="0 0 360 250" role="img" aria-label="A bowl of calcium chloride bath with gel beads resting at the bottom and a spoon above.">
-          <g filter="url(#pencil)" stroke="#2b3544" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M286 18 L206 58" fill="none" stroke-width="6"/>
-            <ellipse cx="190" cy="64" rx="24" ry="11" fill="#d5dde8"/>
-            <path d="M24 124 L336 124 Q336 232 180 238 Q24 232 24 124 Z" fill="#8ccaf2"/>
-            <path d="M24 124 L336 124 Q336 232 180 238 Q24 232 24 124 Z" fill="url(#hatch)" stroke="none"/>
-            <ellipse cx="180" cy="124" rx="156" ry="15" fill="#c5e5fa"/>
-          </g>
-          <g id="beads" filter="url(#pencil)"></g>
-          <text x="38" y="106" font-size="24">CaCl<tspan font-size="17" dy="5">2</tspan><tspan dy="-5"> bath</tspan></text>
-          <text x="30" y="52" font-size="22">Na-alginate drip</text>
-        </svg>
-      </div>
-
-      <div class="controls">
-        <div class="panel">
-          <svg viewBox="0 0 240 240" role="img" aria-label="Cross-section of one bead showing a gel shell around a liquid core." id="xsec"></svg>
-        </div>
-        <div>
-          <label for="secs">Time in bath: <span id="secs-out">30</span> s</label>
-          <input id="secs" type="range" min="0" max="120" step="1" value="30">
-        </div>
-        <button class="drop" id="drop" type="button">Drop a bead</button>
-        <div class="readout" id="readout" aria-live="polite"></div>
-        <div class="legend">
-          <span><i style="background:#f3b63f"></i>gel shell</span>
-          <span><i style="background:#cfe8fa"></i>liquid core</span>
-          <span><i style="background:#4aa8e8"></i>Ca<sup>2+</sup></span>
-        </div>
-        <p class="small">Schematic. Shell thickness is drawn to grow with the square root of time, the usual scaling for diffusion.</p>
-      </div>
-    </div>
-  </section>
-
   <!-- LOG -->
   <section id="log" aria-labelledby="log-h">
     <div class="sec-head">
@@ -513,79 +451,6 @@ footer { padding: 30px 0 48px; color: var(--muted); font-size: .95rem; }
     el("path", { d: d1, stroke: "#ee5a45", "stroke-width": 6 }, helix);
     el("path", { d: d2, stroke: "#9b7ad8", "stroke-width": 6 }, helix);
   }
-
-  /* Spherification model */
-  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var slider = document.getElementById("secs");
-  var out = document.getElementById("secs-out");
-  var xsec = document.getElementById("xsec");
-  var readout = document.getElementById("readout");
-  var beads = document.getElementById("beads");
-  var FULL = 90;
-
-  function fraction(s) { return Math.min(1, Math.sqrt(s / FULL)); }
-
-  function drawBead(parent, cx, cy, r, s) {
-    var f = fraction(s);
-    var g = el("g", {}, parent);
-    var shellW = Math.max(r * f, 1.6);
-    el("circle", { cx: cx, cy: cy, r: r, fill: "#f3b63f", stroke: "#2b3544", "stroke-width": 2.4 }, g);
-    var coreR = r - shellW;
-    if (coreR > 0.5) el("circle", { cx: cx, cy: cy, r: coreR, fill: "#cfe8fa", stroke: "#2b3544", "stroke-width": 1.6 }, g);
-    return g;
-  }
-
-  function renderXsec(s) {
-    var R = 92, c = 120, f = fraction(s);
-    xsec.textContent = "";
-    var scene = el("g", { filter: "url(#pencil)" }, xsec);
-    drawBead(scene, c, c, R, s);
-    var inner = R * (1 - f);
-    /* Ca2+ dots sit inside the shell, deterministic positions */
-    var count = 26;
-    for (var i = 0; i < count; i++) {
-      var ang = i * 2.399963;                       /* golden angle */
-      var u = (i + 0.5) / count;
-      var rr = inner + 4 + (R - inner - 8) * (0.15 + 0.8 * ((u * 7.3) % 1));
-      if (R - inner < 10) rr = R - 4;
-      el("circle", { cx: c + rr * Math.cos(ang), cy: c + rr * Math.sin(ang), r: 3.4, fill: "#4aa8e8", stroke: "#2b3544", "stroke-width": 1.2 }, scene);
-    }
-    var label = f >= 1 ? "solid gel" : "liquid core";
-    var t = el("text", { x: c, y: c + 5, "text-anchor": "middle", "font-size": 17 }, xsec);
-    t.textContent = f >= 1 ? "all gel" : (inner > 48 ? "liquid core" : "");
-  }
-
-  function message(s) {
-    var f = fraction(s), pct = Math.round(f * 100);
-    var head, body;
-    if (f >= 1) { head = "Fully gelled."; body = "Ca<sup>2+</sup> has reached the center, so the bead is a solid gel."; }
-    else if (s < 10) { head = "Thin skin, liquid center."; body = "The bead bursts like boba: little gel has formed yet."; }
-    else { head = "Shell still thickening."; body = "Ca<sup>2+</sup> keeps moving inward and the liquid core shrinks."; }
-    readout.innerHTML = "<strong>" + head + "</strong>" + body + " Shell: " + pct + "% of the radius.";
-  }
-
-  function update() {
-    var s = +slider.value;
-    out.textContent = s;
-    renderXsec(s);
-    message(s);
-  }
-
-  function addBead(s, animate) {
-    var r = 13, x = 82 + Math.random() * 196, y = 176 + Math.random() * 30;
-    /* keep inside the bowl curve */
-    var g = drawBead(beads, x, y, r, s);
-    if (animate && !reduce && g.animate) {
-      g.animate([{ transform: "translateY(-130px)", opacity: 0.2 }, { transform: "translateY(0)", opacity: 1 }], { duration: 850, easing: "cubic-bezier(.3,.1,.7,1)" });
-    }
-    while (beads.childNodes.length > 16) beads.removeChild(beads.firstChild);
-  }
-
-  slider.addEventListener("input", update);
-  document.getElementById("drop").addEventListener("click", function () { addBead(+slider.value, true); });
-
-  [8, 25, 45, 70, 100].forEach(function (s) { addBead(s, false); });
-  update();
 })();
 </script>
 </body>
